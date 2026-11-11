@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
@@ -561,16 +562,20 @@ export default function Navbar() {
         )}
       </div>
       {/* Modal xem chi tiết thông báo cho khách hàng */}
-      {selectedNotif && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-gray-100 animate-in zoom-in-95 duration-200">
+      {selectedNotif && typeof document !== 'undefined' && createPortal(
+        <div className="fixed top-4 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-md pointer-events-none">
+          <div
+            role="dialog"
+            aria-labelledby="customer-notification-title"
+            className="pointer-events-auto max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-3xl w-full p-6 space-y-4 shadow-2xl border border-gray-100 animate-in slide-in-from-top-4 fade-in duration-200"
+          >
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold">
                   <Bell className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-black text-base text-gray-900">Chi Tiết Thông Báo</h3>
+                  <h3 id="customer-notification-title" className="font-heading font-black text-base text-gray-900">Chi Tiết Thông Báo</h3>
                   <p className="text-[11px] text-gray-400">
                     Gửi lúc {formatDateTime(selectedNotif.created_at)}
                   </p>
@@ -616,7 +621,8 @@ export default function Navbar() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
