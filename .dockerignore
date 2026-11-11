@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+.env
+*.log
+.git/
+nginx/certbot/
+README.md
+.gitignore

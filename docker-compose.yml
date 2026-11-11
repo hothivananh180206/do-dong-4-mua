@@ -1,0 +1,90 @@
+# ============================================================
+# docker-compose.yml – Đổ Đống 4 Mùa
+# Bao gồm: Next.js App + MySQL 8.0 + Nginx reverse proxy
+# ============================================================
+
+version: '3.8'
+
+services:
+
+  # ── 1. MySQL Database ──────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: dodong4mua_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # Lưu dữ liệu MySQL vĩnh viễn (không mất khi restart)
+      - mysql_data:/var/lib/mysql
+      # Tự động import file SQL khi khởi tạo lần đầu
+      - ./database/do_dong_4_mua.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── 2. Next.js App ─────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dodong4mua_app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      # Ghi đè DB_HOST để trỏ vào container db (không phải localhost)
+      DB_HOST: db
+    volumes:
+      # Mount thư mục uploads ra ngoài để không mất ảnh khi rebuild
+      - uploads_data:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+    expose:
+      - "3000"
+
+  # ── 3. Nginx Reverse Proxy ─────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: dodong4mua_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Thư mục SSL (Certbot sẽ ghi vào đây)
+      - ./nginx/certbot/conf:/etc/letsencrypt:ro
+      - ./nginx/certbot/www:/var/www/certbot:ro
+    depends_on:
+      - app
+    networks:
+      - app_network
+
+  # ── 4. Certbot (tự động gia hạn SSL) ──────────────────────
+  certbot:
+    image: certbot/certbot
+    container_name: dodong4mua_certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    # Chạy ở chế độ chờ (gia hạn cert mỗi 12h)
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  uploads_data:
