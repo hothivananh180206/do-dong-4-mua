@@ -563,11 +563,12 @@ export default function Navbar() {
       </div>
       {/* Modal xem chi tiết thông báo cho khách hàng */}
       {selectedNotif && typeof document !== 'undefined' && createPortal(
-        <div className="fixed top-4 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-md pointer-events-none">
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div
             role="dialog"
             aria-labelledby="customer-notification-title"
-            className="pointer-events-auto max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-3xl w-full p-6 space-y-4 shadow-2xl border border-gray-100 animate-in slide-in-from-top-4 fade-in duration-200"
+            aria-modal="true"
+            className="max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-gray-100 animate-in zoom-in-95 fade-in duration-200"
           >
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2.5">
