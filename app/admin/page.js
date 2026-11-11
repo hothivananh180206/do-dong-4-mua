@@ -4008,11 +4008,11 @@ export default function AdminDashboardPage() {
 
       {/* TOAST NOTIFICATION (Độ tương phản cao, màu nổi bật, tách biệt hoàn toàn khỏi nền trắng) */}
       {toast && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="fixed top-4 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-md pointer-events-none">
           <div
             role={toast.type === 'error' ? 'alert' : 'status'}
             aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
-            className={`pointer-events-auto w-full max-w-md flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in zoom-in-95 fade-in duration-200 ${toast.type === 'error'
+            className={`pointer-events-auto w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in slide-in-from-top-4 fade-in duration-200 ${toast.type === 'error'
                 ? 'bg-rose-600 border-rose-400 text-white shadow-rose-950/40 ring-4 ring-rose-500/20'
                 : toast.type === 'warning'
                   ? 'bg-amber-500 border-amber-400 text-slate-950 shadow-amber-950/30 ring-4 ring-amber-500/20'

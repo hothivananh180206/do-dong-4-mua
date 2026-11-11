@@ -83,13 +83,15 @@ export default function AdminUsersTab({
               return (
                 <tr key={u.id} className="hover:bg-slate-50/80 transition">
                   <td className="py-3 px-4 font-mono font-bold text-slate-400">#{u.id}</td>
-                  <td className="py-3 px-4 font-bold text-slate-900 flex items-center gap-2">
-                    <span>{u.full_name}</span>
-                    {isSuperAdmin && (
-                      <span className="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded-full">
-                        Gốc
-                      </span>
-                    )}
+                  <td className="py-3 px-4 font-bold text-slate-900 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <span>{u.full_name}</span>
+                      {isSuperAdmin && (
+                        <span className="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded-full">
+                          Gốc
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-4 font-mono font-bold text-brand-700">{u.phone}</td>
                   <td className="py-3 px-4">

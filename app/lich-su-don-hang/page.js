@@ -155,11 +155,11 @@ function OrderHistoryContent() {
 
       {/* Toast Notification (Độ tương phản cao, nổi bật) */}
       {toast && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="fixed top-4 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-md pointer-events-none">
           <div
             role={toast.type === 'error' ? 'alert' : 'status'}
             aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
-            className={`pointer-events-auto w-full max-w-md flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in zoom-in-95 fade-in duration-200 ${
+            className={`pointer-events-auto w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in slide-in-from-top-4 fade-in duration-200 ${
               toast.type === 'error'
                 ? 'bg-rose-600 border-rose-400 text-white shadow-rose-950/40 ring-4 ring-rose-500/20'
                 : 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-950/40 ring-4 ring-emerald-500/20'

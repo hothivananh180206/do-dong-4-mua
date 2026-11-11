@@ -301,11 +301,11 @@ function OrderDetailContent({ code }) {
 
       {/* Toast Notification */}
       {toast && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+        <div className="fixed top-4 right-4 z-[9999] w-[calc(100vw-2rem)] max-w-sm pointer-events-none">
           <div
             role={toast.type === 'error' ? 'alert' : 'status'}
             aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
-            className="pointer-events-auto w-full max-w-sm flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/95 backdrop-blur-md text-slate-800 shadow-2xl border border-slate-100/90 shadow-slate-900/10 animate-in zoom-in-95 fade-in duration-200"
+            className="pointer-events-auto w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/95 backdrop-blur-md text-slate-800 shadow-2xl border border-slate-100/90 shadow-slate-900/10 animate-in slide-in-from-top-4 fade-in duration-200"
           >
             <div className="shrink-0">
               {toast.type === 'error' ? (
