@@ -37,6 +37,18 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: false, message: 'Tài khoản không tồn tại.' }, { status: 404 });
     }
 
+    if (branch_id !== undefined && branch_id !== null) {
+      const branchId = Number(branch_id);
+      if (!Number.isSafeInteger(branchId) || branchId <= 0) {
+        return NextResponse.json({ success: false, message: 'Vui lòng chọn chi nhánh hợp lệ.' }, { status: 400 });
+      }
+
+      const branches = await query('SELECT id FROM branches WHERE id = ?', [branchId]);
+      if (branches.length === 0) {
+        return NextResponse.json({ success: false, message: 'Chi nhánh đã chọn không tồn tại.' }, { status: 400 });
+      }
+    }
+
     // Không cho phép tự khóa hoặc xóa Admin Tổng gốc (id: 1)
     if (id === '1' && status === 0) {
       return NextResponse.json({ success: false, message: 'Không thể vô hiệu hóa tài khoản Admin Tổng mặc định.' }, { status: 400 });

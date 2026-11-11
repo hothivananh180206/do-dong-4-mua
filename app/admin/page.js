@@ -600,7 +600,7 @@ export default function AdminDashboardPage() {
     admin: null,
     full_name: '',
     phone: '',
-    branch_id: 1,
+    branch_id: '',
   });
   const [resetPasswordModal, setResetPasswordModal] = useState({
     isOpen: false,
@@ -650,7 +650,7 @@ export default function AdminDashboardPage() {
 
   // Form states
   const [newAdmin, setNewAdmin] = useState({
-    full_name: '', phone: '', password: '', branch_id: 1, role_id: 2
+    full_name: '', phone: '', password: '', branch_id: '', role_id: 2
   });
   const [newProduct, setNewProduct] = useState({
     name: '', category_id: 1, price: '', discount_price: '', unit: 'kg', stock: 50,
@@ -2526,6 +2526,13 @@ export default function AdminDashboardPage() {
       showToast('Mật khẩu quản trị phải gồm ít nhất 1 chữ in hoa, 1 chữ in thường và 1 chữ số!', 'warning');
       return;
     }
+    const assignedBranch = branches.find(
+      (branch) => Number(branch.id) === Number(newAdmin.branch_id) && Number(branch.status) === 1
+    );
+    if (!assignedBranch) {
+      showToast('Vui lòng chọn một chi nhánh đang hoạt động trước khi tạo tài khoản!', 'warning');
+      return;
+    }
     try {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
@@ -2535,7 +2542,7 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (data.success) {
         setShowAddAdminModal(false);
-        setNewAdmin({ full_name: '', phone: '', password: '', branch_id: 1, role_id: 2 });
+        setNewAdmin({ full_name: '', phone: '', password: '', branch_id: '', role_id: 2 });
         showToast('Tạo tài khoản quản trị thành công!', 'success');
         loadData();
       } else {
@@ -2548,12 +2555,16 @@ export default function AdminDashboardPage() {
 
   // Chỉnh sửa thông tin Admin
   const openEditAdminModal = (admin) => {
+    const assignedBranch = branches.find(
+      (branch) => Number(branch.id) === Number(admin.branch_id)
+    );
+    const fallbackBranch = branches.find((branch) => Number(branch.status) === 1);
     setEditAdminModal({
       isOpen: true,
       admin,
       full_name: admin.full_name,
       phone: admin.phone,
-      branch_id: admin.branch_id || 1,
+      branch_id: assignedBranch?.id || fallbackBranch?.id || '',
     });
   };
 
@@ -2568,20 +2579,29 @@ export default function AdminDashboardPage() {
       showToast('Vui lòng nhập số điện thoại quản trị viên!', 'warning');
       return;
     }
+    if (Number(editAdminModal.admin.id) !== 1 && !branches.some(
+      (branch) => Number(branch.id) === Number(editAdminModal.branch_id)
+    )) {
+      showToast('Vui lòng chọn chi nhánh hợp lệ cho tài khoản!', 'warning');
+      return;
+    }
     try {
+      const updateData = {
+        full_name: editAdminModal.full_name,
+        phone: editAdminModal.phone,
+      };
+      if (Number(editAdminModal.admin.id) !== 1) {
+        updateData.branch_id = editAdminModal.branch_id;
+      }
       const res = await fetch(`/api/admin/users/${editAdminModal.admin.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: editAdminModal.full_name,
-          phone: editAdminModal.phone,
-          branch_id: editAdminModal.branch_id,
-        }),
+        body: JSON.stringify(updateData),
       });
       const data = await res.json();
       if (data.success) {
         showToast(data.message || 'Cập nhật thông tin Admin thành công!', 'success');
-        setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: 1 });
+        setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: '' });
         loadData();
       } else {
         showToast(data.message || 'Lỗi cập nhật thông tin Admin', 'error');
@@ -3626,8 +3646,12 @@ export default function AdminDashboardPage() {
                   {activeTab === 'admins' && (
                     <AdminUsersTab
                       adminUsers={adminUsers}
-                      onOpenAddAdminModal={() => setShowAddAdminModal(true)}
-                      onOpenEditAdminModal={(a) => setEditAdminModal({ isOpen: true, admin: { ...a } })}
+                      onOpenAddAdminModal={() => {
+                        const firstActiveBranch = branches.find((branch) => Number(branch.status) === 1);
+                        setNewAdmin((prev) => ({ ...prev, branch_id: firstActiveBranch?.id || '' }));
+                        setShowAddAdminModal(true);
+                      }}
+                      onOpenEditAdminModal={openEditAdminModal}
                       onOpenResetPasswordModal={(a) => setResetPasswordModal({ isOpen: true, admin: a, password: '', confirm_password: '' })}
                       onOpenAssignPermissionsModal={openAssignPermissionsModal}
                       onLockUser={(a) => setActionModal({ isOpen: true, actionType: 'lock', targetUser: a })}
@@ -3894,6 +3918,8 @@ export default function AdminDashboardPage() {
       />
 
       <OrderDetailModals
+        confirmModal={confirmModal}
+        setConfirmModal={setConfirmModal}
         orderActionModal={orderActionModal}
         setOrderActionModal={setOrderActionModal}
         executeOrderActionModal={executeOrderActionModal}
@@ -3982,9 +4008,11 @@ export default function AdminDashboardPage() {
 
       {/* TOAST NOTIFICATION (Độ tương phản cao, màu nổi bật, tách biệt hoàn toàn khỏi nền trắng) */}
       {toast && (
-        <div className="fixed top-6 right-6 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300 max-w-md">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
           <div
-            className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all ${toast.type === 'error'
+            role={toast.type === 'error' ? 'alert' : 'status'}
+            aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+            className={`pointer-events-auto w-full max-w-md flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in zoom-in-95 fade-in duration-200 ${toast.type === 'error'
                 ? 'bg-rose-600 border-rose-400 text-white shadow-rose-950/40 ring-4 ring-rose-500/20'
                 : toast.type === 'warning'
                   ? 'bg-amber-500 border-amber-400 text-slate-950 shadow-amber-950/30 ring-4 ring-amber-500/20'

@@ -167,8 +167,15 @@ export async function PATCH(request, { params }) {
     }
 
     if (payment_status) {
-      await query('UPDATE orders SET payment_status = ? WHERE id = ?', [payment_status, orderId]);
-      await query('UPDATE payments SET payment_status = ? WHERE order_id = ?', [payment_status === 'PAID' ? 'PAID' : 'PENDING', orderId]);
+      const isPaid = payment_status === 'PAID';
+      await query('UPDATE orders SET payment_status = ? WHERE id = ?', [isPaid ? 'PAID' : 'UNPAID', orderId]);
+      await query(
+        `UPDATE payments
+         SET payment_status = ?,
+             payment_time = ${isPaid ? 'COALESCE(payment_time, NOW())' : 'payment_time'}
+         WHERE order_id = ?`,
+        [isPaid ? 'PAID' : 'PENDING', orderId]
+      );
     }
 
     if (shipping_status || order_status === 'DANG_GIAO' || order_status === 'DA_GIAO') {

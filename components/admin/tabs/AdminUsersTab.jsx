@@ -104,7 +104,7 @@ export default function AdminUsersTab({
                     </span>
                   </td>
                   <td className="py-3 px-4 text-slate-600 font-medium">
-                    {u.branch_name || (isSuperAdmin ? 'Toàn hệ thống' : 'Chi nhánh 1')}
+                    {u.branch_name || (isSuperAdmin ? 'Toàn hệ thống' : 'Chưa phân công')}
                   </td>
                   <td className="py-3 px-4">
                     <span

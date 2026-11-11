@@ -5,6 +5,8 @@ import { CheckCircle2, Clock, Play, AlertTriangle, User, Truck, X, Phone, MapPin
 import { formatDateTime } from '@/lib/date';
 
 export default function OrderDetailModals({
+  confirmModal,
+  setConfirmModal,
   orderActionModal,
   setOrderActionModal,
   executeOrderActionModal,
@@ -20,6 +22,40 @@ export default function OrderDetailModals({
 }) {
   return (
     <>
+      {confirmModal?.isOpen && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100">
+            <div className="mb-3.5 flex justify-center">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shadow-sm">
+                <DollarSign className="w-7 h-7" />
+              </div>
+            </div>
+            <h3 className="text-lg font-black text-slate-900 mb-1.5">{confirmModal.title}</h3>
+            <p className="text-xs text-slate-500 mb-5 leading-relaxed">{confirmModal.message}</p>
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+              >
+                {confirmModal.cancelText}
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const onConfirm = confirmModal.onConfirm;
+                  setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+                  if (onConfirm) await onConfirm();
+                }}
+                className="flex-1 py-2.5 px-4 rounded-xl font-black text-xs text-white bg-emerald-600 hover:bg-emerald-700 transition cursor-pointer shadow-sm"
+              >
+                {confirmModal.confirmText}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {orderActionModal.isOpen && orderActionModal.order && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200 relative">

@@ -24,6 +24,8 @@ export default function UserAdminModals({
   handleSavePermissionsSubmit,
   toggleModulePermissions
 }) {
+  const activeBranches = branches.filter((branch) => Number(branch.status) === 1);
+
   return (
     <>
       {showAddAdminModal && (
@@ -72,14 +74,19 @@ export default function UserAdminModals({
               <div>
                 <label className="block font-bold text-slate-700 mb-1">Chi nhánh phân công phụ trách *</label>
                 <select
-                  value={newAdmin.branch_id}
-                  onChange={(e) => setNewAdmin({ ...newAdmin, branch_id: parseInt(e.target.value, 10) })}
+                  required
+                  value={newAdmin.branch_id ?? ''}
+                  onChange={(e) => setNewAdmin({ ...newAdmin, branch_id: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
-                  {branches.map(b => (
+                  <option value="">-- Chọn chi nhánh đang hoạt động --</option>
+                  {activeBranches.map(b => (
                     <option key={b.id} value={b.id}>{b.branch_name} - {b.phone}</option>
                   ))}
                 </select>
+                {activeBranches.length === 0 && (
+                  <p className="text-[10px] text-rose-600 mt-1">Chưa có chi nhánh hoạt động. Hãy tạo hoặc mở lại chi nhánh trước.</p>
+                )}
               </div>
 
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
@@ -103,6 +110,7 @@ export default function UserAdminModals({
                 </button>
                 <button
                   type="submit"
+                  disabled={activeBranches.length === 0}
                   className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold cursor-pointer transition shadow-md shadow-brand-600/20"
                 >
                   Lưu Admin Chi Nhánh
@@ -129,7 +137,7 @@ export default function UserAdminModals({
               </div>
               <button
                 type="button"
-                onClick={() => setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: 1 })}
+                onClick={() => setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: '' })}
                 className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition cursor-pointer text-sm font-bold"
               >
                 ✕
@@ -166,10 +174,12 @@ export default function UserAdminModals({
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Chi nhánh phân công phụ trách *</label>
                   <select
-                    value={editAdminModal.branch_id}
-                    onChange={(e) => setEditAdminModal({ ...editAdminModal, branch_id: parseInt(e.target.value, 10) })}
+                    required
+                    value={editAdminModal.branch_id ?? ''}
+                    onChange={(e) => setEditAdminModal({ ...editAdminModal, branch_id: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
+                    <option value="">-- Chọn chi nhánh --</option>
                     {branches.map(b => (
                       <option key={b.id} value={b.id}>{b.branch_name} - {b.phone}</option>
                     ))}
@@ -188,7 +198,7 @@ export default function UserAdminModals({
               <div className="pt-2 flex justify-end gap-2 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: 1 })}
+                  onClick={() => setEditAdminModal({ isOpen: false, admin: null, full_name: '', phone: '', branch_id: '' })}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 cursor-pointer transition"
                 >
                   Hủy bỏ

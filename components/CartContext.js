@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const CartContext = createContext();
 
@@ -138,11 +139,18 @@ export function CartProvider({ children }) {
       }}
     >
       {children}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-brand-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-brand-500 animate-bounce">
-          <span className="text-xl">🧺</span>
-          <span className="text-sm font-semibold">{toastMessage}</span>
-        </div>
+      {toastMessage && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+          <div
+            role="status"
+            aria-live="polite"
+            className="pointer-events-auto w-full max-w-md bg-brand-700 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-brand-500 animate-in zoom-in-95 fade-in duration-200"
+          >
+            <span className="text-xl">🧺</span>
+            <span className="text-sm font-semibold">{toastMessage}</span>
+          </div>
+        </div>,
+        document.body
       )}
     </CartContext.Provider>
   );

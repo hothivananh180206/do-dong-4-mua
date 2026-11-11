@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, XCircle } from 'lucide-react';
@@ -299,9 +300,13 @@ function OrderDetailContent({ code }) {
       />
 
       {/* Toast Notification */}
-      {toast && (
-        <div className="fixed top-6 right-6 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300 max-w-sm">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/95 backdrop-blur-md text-slate-800 shadow-2xl border border-slate-100/90 shadow-slate-900/10">
+      {toast && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+          <div
+            role={toast.type === 'error' ? 'alert' : 'status'}
+            aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+            className="pointer-events-auto w-full max-w-sm flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/95 backdrop-blur-md text-slate-800 shadow-2xl border border-slate-100/90 shadow-slate-900/10 animate-in zoom-in-95 fade-in duration-200"
+          >
             <div className="shrink-0">
               {toast.type === 'error' ? (
                 <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 border border-rose-100 flex items-center justify-center">
@@ -323,7 +328,8 @@ function OrderDetailContent({ code }) {
               ✕
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

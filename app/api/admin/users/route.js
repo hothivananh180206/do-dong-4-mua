@@ -30,6 +30,16 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Vui lòng nhập họ tên, số điện thoại và mật khẩu.' }, { status: 400 });
     }
 
+    const branchId = Number(branch_id);
+    if (!Number.isSafeInteger(branchId) || branchId <= 0) {
+      return NextResponse.json({ success: false, message: 'Vui lòng chọn chi nhánh hợp lệ.' }, { status: 400 });
+    }
+
+    const branches = await query('SELECT id FROM branches WHERE id = ? AND status = 1', [branchId]);
+    if (branches.length === 0) {
+      return NextResponse.json({ success: false, message: 'Chi nhánh đã chọn không tồn tại hoặc đang ngừng hoạt động.' }, { status: 400 });
+    }
+
     const pwValidation = validatePasswordBR010(password);
     if (!pwValidation.isValid) {
       return NextResponse.json({ success: false, message: pwValidation.message }, { status: 400 });
@@ -45,20 +55,20 @@ export async function POST(request) {
     const result = await query(
       `INSERT INTO users (role_id, branch_id, full_name, phone, password, address, status)
        VALUES (?, ?, ?, ?, ?, 'Trụ sở chi nhánh', 1)`,
-      [role_id, branch_id || 1, full_name.trim(), cleanPhone, hashedPassword]
+      [role_id, branchId, full_name.trim(), cleanPhone, hashedPassword]
     );
 
     // Ghi nhật ký
     await query(
       `INSERT INTO system_logs (user_id, action, module, description)
        VALUES (1, 'CREATE_ADMIN', 'ADMIN', ?)`,
-      [`Tạo mới tài khoản quản trị: ${full_name} (${cleanPhone}) - Chi nhánh ${branch_id || 1}`]
+      [`Tạo mới tài khoản quản trị: ${full_name} (${cleanPhone}) - Chi nhánh ${branchId}`]
     );
 
     return NextResponse.json({
       success: true,
       message: 'Tạo tài khoản quản trị thành công!',
-      data: { id: result.insertId, full_name, phone: cleanPhone, role_id, branch_id }
+      data: { id: result.insertId, full_name, phone: cleanPhone, role_id, branch_id: branchId }
     }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

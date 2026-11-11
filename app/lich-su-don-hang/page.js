@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, XCircle } from 'lucide-react';
@@ -153,10 +154,12 @@ function OrderHistoryContent() {
       />
 
       {/* Toast Notification (Độ tương phản cao, nổi bật) */}
-      {toast && (
-        <div className="fixed top-6 right-6 z-[9999] animate-in slide-in-from-top-4 fade-in duration-300 max-w-md">
+      {toast && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
           <div
-            className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all ${
+            role={toast.type === 'error' ? 'alert' : 'status'}
+            aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+            className={`pointer-events-auto w-full max-w-md flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl border transition-all animate-in zoom-in-95 fade-in duration-200 ${
               toast.type === 'error'
                 ? 'bg-rose-600 border-rose-400 text-white shadow-rose-950/40 ring-4 ring-rose-500/20'
                 : 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-950/40 ring-4 ring-emerald-500/20'
@@ -186,7 +189,8 @@ function OrderHistoryContent() {
               ✕
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
