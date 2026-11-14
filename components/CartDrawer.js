@@ -65,12 +65,13 @@ export default function CartDrawer() {
                 <p className="text-gray-500 max-w-xs mx-auto font-medium leading-relaxed">
                   Hãy dạo quanh các quầy trái cây 4 mùa và chọn những quả tươi ngọt nhất nhé!
                 </p>
-                <button
+                <Link
+                  href="/#product-section"
                   onClick={() => setIsCartOpen(false)}
-                  className="mt-2 btn-primary cursor-pointer"
+                  className="mt-2 btn-primary inline-flex items-center justify-center cursor-pointer"
                 >
                   Khám phá trái cây ngay
-                </button>
+                </Link>
               </div>
             ) : (
               items.map((item) => (
