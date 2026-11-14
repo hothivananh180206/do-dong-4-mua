@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300..900;1,6..12,300..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #059669;
+  --color-on-primary: #ffffff;
+  --color-secondary: #10b981;
+  --color-on-secondary: #0f172a;
+  --color-accent: #ea580c;
+  --color-on-accent: #ffffff;
+  --color-background: #f8fafc;
+  --color-foreground: #064e3b;
+  --color-card: #ffffff;
+  --color-card-foreground: #064e3b;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #475569;
+  --color-border: #e2e8f0;
+  --color-destructive: #dc2626;
+  --color-ring: #059669;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #1e293b;
+  background-color: #f8fafc;
+  font-family: 'Nunito Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rubik', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Custom interactive buttons and cards */
+.btn-primary {
+  background-color: #ea580c;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: #c2410c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.35);
+}
+
+.btn-secondary {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1.5px solid #a7f3d0;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background-color: #d1fae5;
+  border-color: #059669;
+  transform: translateY(-1px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Ẩn Next.js Dev Indicator badge (icon N tròn ở góc dưới bên trái) */
+nextjs-portal,
+#nextjs-dev-indicator,
+[data-nextjs-dev-indicator],
+[data-nextjs-toast],
+div[data-nextjs-route-announcer] {
+  display: none !important;
+}
+

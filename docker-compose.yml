@@ -1,0 +1,40 @@
+services:
+  app:
+    build: .
+    container_name: do_dong_app
+    restart: always
+    ports:
+      - "80:3000"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=do_dong_4_mua
+      - NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAmHgjOVVONb1ZMtxO7uLewMzsItSCA1rM
+      - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=do-dong-4-mua.firebaseapp.com
+      - NEXT_PUBLIC_FIREBASE_PROJECT_ID=do-dong-4-mua
+      - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=do-dong-4-mua.firebasestorage.app
+      - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=355267139822
+      - NEXT_PUBLIC_FIREBASE_APP_ID=1:355267139822:web:1220c1fbc42672da1dfbff
+      - NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-L4VCCZB7BN
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: do_dong_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: do_dong_4_mua
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/do_dong_4_mua.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  mysql_data:
