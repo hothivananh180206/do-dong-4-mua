@@ -250,6 +250,19 @@ export default function AdminOrdersTab({
                     {/* 2. Đổi trạng thái */}
                     {(() => {
                       if (['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(o.order_status)) {
+                        const isVietQrPending = o.payment_method === 'VIETQR' && o.payment_status !== 'PAID';
+                        if (isVietQrPending) {
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => onViewOrderDetail(o)}
+                              className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition shadow-sm"
+                              title="Kiểm tra tiền chuyển khoản và duyệt đơn"
+                            >
+                              Thu tiền & Duyệt
+                            </button>
+                          );
+                        }
                         return (
                           <button
                             type="button"

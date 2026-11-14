@@ -348,18 +348,21 @@ export default function OrderDetailModals({
                 {selectedOrder.payment_status !== 'PAID' && selectedOrder.order_status !== 'DA_HUY' && (
                   <button
                     onClick={() => {
+                      const isVietQrPending = selectedOrder.payment_method === 'VIETQR' && ['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status);
                       setOrderActionModal({
                         isOpen: true,
                         actionType: 'STATUS',
                         order: selectedOrder,
                         iconType: 'status',
-                        title: 'Xác Nhận Đã Thu Tiền',
-                        message: `Xác nhận đã thu đủ ${parseFloat(selectedOrder.total_amount || 0).toLocaleString('vi-VN')} đ cho đơn hàng #${selectedOrder.order_code}?`,
+                        title: isVietQrPending ? 'Xác Nhận Đã Thu Tiền & Duyệt Đơn' : 'Xác Nhận Đã Thu Tiền',
+                        message: isVietQrPending
+                          ? `Xác nhận đã nhận đủ ${parseFloat(selectedOrder.total_amount || 0).toLocaleString('vi-VN')} đ chuyển khoản cho đơn #${selectedOrder.order_code}? Đơn hàng sẽ được tự động DUYỆT ĐƠN và tạo vận đơn đóng gói!`
+                          : `Xác nhận đã thu đủ ${parseFloat(selectedOrder.total_amount || 0).toLocaleString('vi-VN')} đ cho đơn hàng #${selectedOrder.order_code}?`,
                         targetStatus: ['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status) ? 'DA_XAC_NHAN' : null,
                         targetShippingStatus: ['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status) ? 'DA_TAO_VAN_DON' : null,
                         targetPaymentStatus: 'PAID',
-                        statusLabel: 'Đã thu tiền',
-                        confirmText: 'Xác nhận thu tiền',
+                        statusLabel: isVietQrPending ? 'Đã thu tiền & Duyệt đơn' : 'Đã thu tiền',
+                        confirmText: isVietQrPending ? 'Xác nhận thu tiền & Duyệt đơn' : 'Xác nhận thu tiền',
                         confirmColor: 'bg-emerald-600 hover:bg-emerald-700',
                         requireReason: false,
                         reason: '',
@@ -367,11 +370,14 @@ export default function OrderDetailModals({
                     }}
                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-sm"
                   >
-                    ✓ Đã thu tiền
+                    {selectedOrder.payment_method === 'VIETQR' && ['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status)
+                      ? '✓ Đã thu tiền & Duyệt đơn'
+                      : '✓ Đã thu tiền'}
                   </button>
                 )}
 
-                {['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status) && (
+                {/* Nút Duyệt đơn chỉ hiển thị cho đơn COD. Đơn VietQR bắt buộc phải bấm 'Đã thu tiền & Duyệt đơn' để chống duyệt nhầm khi chưa có tiền */}
+                {['CHO_XAC_NHAN', 'CHO_THANH_TOAN'].includes(selectedOrder.order_status) && selectedOrder.payment_method !== 'VIETQR' && (
                   <button
                     onClick={() => promptChangeOrderStatus(selectedOrder, 'DA_XAC_NHAN', 'DA_TAO_VAN_DON', 'Duyệt đơn')}
                     className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold cursor-pointer transition shadow-sm"
